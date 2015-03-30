@@ -1,11 +1,12 @@
 attribute vec3 vertexPosition_modelspace;
 attribute vec3 vertexNormal_modelspace;
-
+attribute vec3 a_UV;
 uniform mat4 MVP;
 uniform mat4 M;
 
 varying vec3 Normal_worldspace;
 varying vec3 Position_worldspace;
+varying vec2 UV;
 
 void main(){
 
@@ -16,22 +17,25 @@ void main(){
 	Position_worldspace = (M * vec4(vertexPosition_modelspace,1.0)).xyz;
 
 	Normal_worldspace = (M * vec4(vertexNormal_modelspace, 0.0)).xyz;
+	UV = a_UV.xy;
 }
 
 [FRAGMENT]
 
 varying vec3 Normal_worldspace;
 varying vec3 Position_worldspace;
+varying vec2 UV;
 
 uniform vec3 light_position;
-//uniform vec3 EyePos_worldspace;
+uniform sampler2D myTextureSampler;
 
 void main(){
     vec3 LightColor = vec3(1,1,1);
-    float LightPower = 10.0f;
+    float LightPower = 20.0f;
 
-    vec3 MaterialDiffuseColor = vec3(0.9,0.9,0.9);//texture2D( myTextureSampler, UV ).rgb;
-	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
+    //vec3 MaterialDiffuseColor = vec3(0.9,0.9,0.9);//texture2D( myTextureSampler, UV ).rgb;
+    vec3 MaterialDiffuseColor = texture2D( myTextureSampler, UV ).rgb;
+	vec3 MaterialAmbientColor = vec3(0.0,0.0,0.0) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
     float d = distance(Position_worldspace, light_position);
@@ -55,7 +59,7 @@ void main(){
                 		// Diffuse : "color" of the object
                 		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (d*d) +
                 		// Specular : reflective highlight, like a mirror
-                		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,20.0) / (d*d);
+                		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,200.0) / (d*d);
 
     gl_FragColor = vec4(color, 1.0);
 }

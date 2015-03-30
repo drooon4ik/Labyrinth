@@ -24,20 +24,20 @@ import utilities.Utilities;
 
 @SuppressLint("NewApi")
 public class Player {
-    private int count;
+    private static int count;
     private Texture tex;
     public Shader shad;
     public final float[] ModelMatrix = new float[16];
     private final float[] MVPMatrix = new float[16];
 
-    private int vertexPosition_modelspace, vertexNormal_modelspace;
+    private int vertexPosition_modelspace, vertexNormal_modelspace, a_UV;
     private int MVP, M;
     private int myTextureSampler, MV;
 
     private int light_position;
     static float[] lightPos = new float[3];
 
-    int vertex_id, normal_id, uv_id;
+    static int vertex_id, normal_id, uv_id;
 
     private Vec2 dir;
     private float angle;
@@ -47,7 +47,7 @@ public class Player {
 	private String PACKAGE_NAME;
     
 	public AABB aabb;
-
+    static ModelData md;
     public Player(String name, Shader shad, Texture tex, Vec2 pos){
         PACKAGE_NAME = G.getContext().getApplicationContext().getPackageName();
         try {
@@ -61,11 +61,12 @@ public class Player {
 
         vertexPosition_modelspace = GLES20.glGetAttribLocation(shad.prog_id, "vertexPosition_modelspace");
         vertexNormal_modelspace = GLES20.glGetAttribLocation(shad.prog_id, "vertexNormal_modelspace");
+        a_UV = GLES20.glGetAttribLocation(shad.prog_id, "a_UV");
         MVP = GLES20.glGetUniformLocation(shad.prog_id, "MVP");
         M = GLES20.glGetUniformLocation(shad.prog_id, "M");
         light_position = GLES20.glGetUniformLocation(shad.prog_id, "light_position");
 
-//      myTextureSampler = GLES20.glGetUniformLocation(shad.prog_id, "myTextureSampler");
+        myTextureSampler = GLES20.glGetUniformLocation(shad.prog_id, "myTextureSampler");
 
 
         angle = 45;
@@ -93,11 +94,16 @@ public class Player {
         GLES20.glEnableVertexAttribArray(vertexNormal_modelspace);
         GLES20.glVertexAttribPointer(vertexNormal_modelspace, 3, GLES20.GL_FLOAT, false, 0, 0);
 
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, uv_id);
+        GLES20.glEnableVertexAttribArray(a_UV);
+        GLES20.glVertexAttribPointer(a_UV, 3, GLES20.GL_FLOAT, false, 0, 0);
+
         Matrix.multiplyMM(MVPMatrix, 0, Camera.getProjViewMatrix(), 0, ModelMatrix, 0);
         GLES20.glUniformMatrix4fv(MVP, 1, false,MVPMatrix, 0);
         GLES20.glUniformMatrix4fv(M, 1, false,ModelMatrix, 0);
 
         GLES20.glUniform3fv(light_position,1,lightPos,0);
+        GLES20.glUniform1i(myTextureSampler,0);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,count);
 
@@ -107,52 +113,53 @@ public class Player {
 
 
     void Load_Mesh(String Name) throws IOException {
-
-        ModelData md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.sphere));
-
-        count = md.v.length;
-        FloatBuffer mTriangleVertices; // ��������� ������
-        ByteBuffer bb =  ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
-        bb.order(ByteOrder.nativeOrder()); // ������� ������
-        mTriangleVertices = bb.asFloatBuffer(); 
-        mTriangleVertices.put(md.v); // ���������� ������ � "����" ������
-        mTriangleVertices.position(0);
-
-        int[] id = new int[1];
-        GLES20.glGenBuffers(1,id, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,mTriangleVertices.capacity() * 4,mTriangleVertices,GLES20.GL_STATIC_DRAW);
-
-        vertex_id = id[0];
+        if(md == null) {
+            md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.filex));
 
 
-        FloatBuffer mTriangleNormals; // ��������� ������
-        ByteBuffer bb_n =  ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
-        bb_n.order(ByteOrder.nativeOrder()); // ������� ������
-        mTriangleNormals = bb_n.asFloatBuffer();
-        mTriangleNormals.put(md.vn); // ���������� ������ � "����" ������
-        mTriangleNormals.position(0);
+            count = md.v.length;
+            FloatBuffer mTriangleVertices; // ��������� ������
+            ByteBuffer bb = ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
+            bb.order(ByteOrder.nativeOrder()); // ������� ������
+            mTriangleVertices = bb.asFloatBuffer();
+            mTriangleVertices.put(md.v); // ���������� ������ � "����" ������
+            mTriangleVertices.position(0);
 
-        GLES20.glGenBuffers(1,id, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,mTriangleNormals.capacity() * 4,mTriangleNormals,GLES20.GL_STATIC_DRAW);
+            int[] id = new int[1];
+            GLES20.glGenBuffers(1, id, 0);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTriangleVertices.capacity() * 4, mTriangleVertices, GLES20.GL_STATIC_DRAW);
 
-        normal_id = id[0];
+            vertex_id = id[0];
 
 
-        FloatBuffer mTriangleUVs; // ��������� ������
-        ByteBuffer bbUV =  ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
-        bbUV.order(ByteOrder.nativeOrder()); // ������� ������
-        mTriangleUVs = bbUV.asFloatBuffer();
-        mTriangleUVs.put(md.vt); // ���������� ������ � "����" ������
-        mTriangleUVs.position(0);
+            FloatBuffer mTriangleNormals; // ��������� ������
+            ByteBuffer bb_n = ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
+            bb_n.order(ByteOrder.nativeOrder()); // ������� ������
+            mTriangleNormals = bb_n.asFloatBuffer();
+            mTriangleNormals.put(md.vn); // ���������� ������ � "����" ������
+            mTriangleNormals.position(0);
 
-        GLES20.glGenBuffers(1,id, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,mTriangleUVs.capacity() * 4,mTriangleUVs,GLES20.GL_STATIC_DRAW);
+            GLES20.glGenBuffers(1, id, 0);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTriangleNormals.capacity() * 4, mTriangleNormals, GLES20.GL_STATIC_DRAW);
 
-        uv_id = id[0];
+            normal_id = id[0];
 
+
+            FloatBuffer mTriangleUVs; // ��������� ������
+            ByteBuffer bbUV = ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
+            bbUV.order(ByteOrder.nativeOrder()); // ������� ������
+            mTriangleUVs = bbUV.asFloatBuffer();
+            mTriangleUVs.put(md.vt); // ���������� ������ � "����" ������
+            mTriangleUVs.position(0);
+
+            GLES20.glGenBuffers(1, id, 0);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id[0]);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTriangleUVs.capacity() * 4, mTriangleUVs, GLES20.GL_STATIC_DRAW);
+
+            uv_id = id[0];
+        }
     }
 
     public void translate(Vec2 dir){

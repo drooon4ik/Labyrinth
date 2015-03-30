@@ -13,11 +13,11 @@ import utilities.ShaderLoader;
 
 
 public class Scene implements GLSurfaceView.Renderer {
-
+    final int num = 1000;
     private ShaderLoader ShdLoad;
 	private TextureLoader TexLoad;
 	private Player sm;
-	private Player[] sm2 = new Player[10];
+	private Player[] sm2 = new Player[num];
 
     private float x, y;
 	public Scene(Context context) {
@@ -34,7 +34,7 @@ public class Scene implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         
         sm.Draw();
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < num / 10; i++) {
             sm2[i].Draw();
         }
     }
@@ -44,10 +44,9 @@ public class Scene implements GLSurfaceView.Renderer {
         G.setScreenXY(width, height);
         Vec2 pos = new Vec2(0.0f,0.0f);
         sm = new Player("mesh1",ShdLoad.Load("sample1"),TexLoad.Load("texture",true,true,true), pos);
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < num; i++) {
             sm2[i] = new Player("mesh1",ShdLoad.Load("sample1"),TexLoad.Load("texture",true,true,true), new Vec2(i, 1));
         }
-        sm2[3] = new Player("mesh1",ShdLoad.Load("sample1"),TexLoad.Load("texture",true,true,true), new Vec2(2, 0));
 
         float ratio = (float) width / height;
 
@@ -79,7 +78,7 @@ public class Scene implements GLSurfaceView.Renderer {
             float dy = ny - y;
             if(Math.abs(dx) < 100 && Math.abs(dy) < 100) {
                 sm.translate(new Vec2(dx / 100.0f, dy / 100.0f));
-                for(int i = 0; i < 4; i++) {
+                for(int i = 0; i < num; i++) {
                     sm.collide(sm2[i].aabb);
                 }
             }
