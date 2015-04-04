@@ -40,7 +40,6 @@ public class Player {
     static int vertex_id, normal_id, uv_id;
 
     private Vec2 dir;
-    private float angle;
     private float velocity;
     private float S;
     
@@ -69,7 +68,6 @@ public class Player {
         myTextureSampler = GLES20.glGetUniformLocation(shad.prog_id, "myTextureSampler");
 
 
-        angle = 45;
         velocity = 11;
 
         aabb = new AABB(pos, 1, 1);
