@@ -6,13 +6,14 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.core.Player;
 
 import utilities.ShaderLoader;
 
 
-public class Scene implements GLSurfaceView.Renderer {
+public class Scene implements GLSurfaceView.Renderer{
     final int num = 1000;
     private ShaderLoader ShdLoad;
 	private TextureLoader TexLoad;
@@ -20,6 +21,7 @@ public class Scene implements GLSurfaceView.Renderer {
 	private Player[] sm2 = new Player[num];
 
     private float x, y;
+
 	public Scene(Context context) {
         G.setContext(context);
     }
@@ -32,14 +34,13 @@ public class Scene implements GLSurfaceView.Renderer {
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_CULL_FACE);
-        
+
         sm.Draw();
         for(int i = 0; i < num / 10; i++) {
             sm2[i].Draw();
         }
     }
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
-    	System.out.println("Helo mather fucker");
         GLES20.glViewport(0, 0, width, height);
         G.setScreenXY(width, height);
         Vec2 pos = new Vec2(0.0f,0.0f);
@@ -51,7 +52,7 @@ public class Scene implements GLSurfaceView.Renderer {
         float ratio = (float) width / height;
 
         Camera.setfrustumMProj(-ratio, ratio, -1, 1, 1.0f, 60);
-        Camera.setLookAtM(0.0f, 4.1f, 0.1f, 0, 0, 0, 0, 1.0f, 0);
+        Camera.setLookAtM(4.0f, 4.1f, 0.1f, 4, 0, 0, 0, 1.0f, 0);
 
         //Camera.EyeDirection_worldspace = GLES20.glGetUniformLocation(sm.shad.prog_id,  "EyeDirection_worldspace");
         //GLES20.glUniform3fv(Camera.EyeDirection_worldspace,1,Camera.eyePos,0);
@@ -68,26 +69,33 @@ public class Scene implements GLSurfaceView.Renderer {
 
         System.gc();
 	}
+
+
+
     public void onTouchEvent(final MotionEvent event) {
+
         int e = event.getAction();
+        sm.move(new Vec2(1.0f,0.0f));
+//        if(e == MotionEvent.ACTION_MOVE) {
+//            float nx = event.getX();
+//            float ny = event.getY();
+//            float dx = nx - x;
+//            float dy = ny - y;
+////            if(Math.abs(dx) < 100 && Math.abs(dy) < 100) {
+////                //sm.translate(new Vec2(dx / 100.0f, dy / 100.0f));
+////
+////                for(int i = 0; i < num; i++) {
+////                    sm.collide(sm2[i].aabb);
+////                }
+////            }
+//
+//            x = event.getX();
+//            y = event.getY();
+//        }
 
-        if(e == MotionEvent.ACTION_MOVE) {
-            float nx = event.getX();
-            float ny = event.getY();
-            float dx = nx - x;
-            float dy = ny - y;
-            if(Math.abs(dx) < 100 && Math.abs(dy) < 100) {
-                sm.translate(new Vec2(dx / 100.0f, dy / 100.0f));
-                for(int i = 0; i < num; i++) {
-                    sm.collide(sm2[i].aabb);
-                }
-            }
-
-            x = event.getX();
-            y = event.getY();
-        }
-
-        Camera.setLookAtM(sm.ModelMatrix[12], 4.0f, sm.ModelMatrix[14]+0.001f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
+        //Camera.setLookAtM(sm.ModelMatrix[12], 4.0f, sm.ModelMatrix[14]+0.001f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
         //GLES20.glUniform3fv(Camera.EyeDirection_worldspace,1,Camera.eyePos,0);
     }
+
+
 }

@@ -42,6 +42,11 @@ public class Player {
     private Vec2 dir;
     private float velocity;
     private float S;
+
+    private long tPast;
+    private long tPres;
+
+    private byte moveExe;//вызывалась ли функция move
     
 	private String PACKAGE_NAME;
     
@@ -68,7 +73,7 @@ public class Player {
         myTextureSampler = GLES20.glGetUniformLocation(shad.prog_id, "myTextureSampler");
 
 
-        velocity = 11;
+        velocity = 0.001f;
 
         aabb = new AABB(pos, 1, 1);
 
@@ -77,10 +82,16 @@ public class Player {
         lightPos[0] = ModelMatrix[12];
         lightPos[1] = ModelMatrix[13] + 2;
         lightPos[2] = ModelMatrix[14];
+
+        tPast = tPres = G.getTime();
+
+        dir = new Vec2(0.0f,0.0f);
     }
 
     @SuppressLint("NewApi")
 	public void Draw(){
+
+        lifeCicle();
         GLES20.glUseProgram(shad.prog_id);
         tex.Use(0);
 
@@ -144,7 +155,6 @@ public class Player {
 
             normal_id = id[0];
 
-
             FloatBuffer mTriangleUVs; // ��������� ������
             ByteBuffer bbUV = ByteBuffer.allocateDirect(md.v.length * 4); // �������� "����" ������
             bbUV.order(ByteOrder.nativeOrder()); // ������� ������
@@ -164,7 +174,6 @@ public class Player {
     	float x = dir.v[0];
     	float y = dir.v[2];
     	Matrix.translateM(ModelMatrix,0, x, 0, y);
-        //if(aabb != null)
         aabb.updateVerts(ModelMatrix);
 
         lightPos[0] = ModelMatrix[12];
@@ -189,13 +198,30 @@ public class Player {
     }
     
     private void lifeCicle() {
-    	translate(dir);
+        tPres = G.getTime();
+        if(moveExe>0) {
+            moving();
+            moveExe--;
+        }
+        tPast = tPres;
     }
 
     public void collide(AABB other_aabb) {
-
         if(aabb.CollideRect(other_aabb, ModelMatrix)) {
             aabb.updateVerts(ModelMatrix);
         }
     }
+
+    //public void move(Vec2 vec) {
+    public void move(Vec2 vec) {
+        dir = vec;
+        moveExe = 4;
+//        dir.v[0] = 1.0f;
+//        dir.v[2] = 0.0f;
+    }
+    private void moving(){
+        S = velocity * (tPres - tPast);
+        translate(Vec2.multiply(dir, S));
+    }
+
 }

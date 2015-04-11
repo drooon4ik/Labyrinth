@@ -38,10 +38,8 @@ public class MainActivity extends Activity {
 		glSurfaceView.setRenderer(render);
 		glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
-		setContentView(glSurfaceView);
-		
-		
-		
+        setContentView(glSurfaceView);
+
 		Shared.res = getResources();
 
 	}
@@ -63,11 +61,11 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) { // �������� onTouchEvent � ����� Renderer
-
-        glSurfaceView.queueEvent(new Runnable() {
-            public void run() {
-                render.onTouchEvent(event);
-            }});
+        render.onTouchEvent(event);
+//        glSurfaceView.queueEvent(new Runnable() {
+//            public void run() {
+//                render.onTouchEvent(event);
+//            }});
         return true;
     }
 

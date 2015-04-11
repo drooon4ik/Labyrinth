@@ -46,8 +46,6 @@ public class AABB {
             verticesMod[i].v[0] = rez[0];
             verticesMod[i].v[2] = rez[2];
 
-
-
         }
         for(int i = 0; i < 4; i++) {
             m_Axis[i] = Vec2.minus(verticesMod[(i + 1) % numPoints], verticesMod[i]);
