@@ -13,7 +13,6 @@ import android.view.MotionEvent;
  */
 @SuppressLint("NewApi")
 public class Camera {
-    static int EyeDirection_worldspace;
     static float[] ProjMatrix = new float[16];
     static float[] ViewMatrix = new float[16];
     static float[] ProjViewMatrix = new float[16];

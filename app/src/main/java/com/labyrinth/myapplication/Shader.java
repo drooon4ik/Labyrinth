@@ -7,7 +7,6 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.IntBuffer;
 import java.util.regex.Pattern;
 
 
@@ -33,14 +32,8 @@ public class Shader {
     }
 
     public void LinkProgram(){
-        int[] un = new int[1];
-        un[0] = 1;
         GLES20.glLinkProgram(prog_id);
-        GLES20.glGetProgramiv(prog_id, GLES20.GL_LINK_STATUS,un,0);
-        if(un[0] == 0)
-            System.out.println("Could not link program");
     }
-
 
     private int loadShader(int shaderType, String source) {
         int shader = GLES20.glCreateShader(shaderType);
