@@ -16,7 +16,6 @@ public class MainActivity extends Activity {
 	private Handler mHandler = new Handler();
 	private Boolean RPause = false;
 	private int FPS = 60;
-    private TestTouch tt = new TestTouch();
 
 	@SuppressLint("NewApi")
 	@Override
@@ -38,6 +37,8 @@ public class MainActivity extends Activity {
 		glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		setContentView(glSurfaceView);
 		Shared.res = getResources();
+
+
 	}
 
 	void reqRend() {
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
         glSurfaceView.queueEvent(new Runnable() {
             public void run() {
                 render.onTouchEvent(event);
-//                tt.onTouch(null, event);
+                //tt.onTouch(null, event);
             }});
         return true;
     }

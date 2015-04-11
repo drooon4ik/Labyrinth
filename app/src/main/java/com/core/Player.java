@@ -18,6 +18,7 @@ import com.labyrinth.myapplication.Shader;
 import com.labyrinth.myapplication.Shared;
 import com.labyrinth.myapplication.Texture;
 import com.labyrinth.myapplication.Vec2;
+import com.labyrinth.myapplication.Vectors;
 
 import utilities.ModelData;
 import utilities.Utilities;
@@ -89,7 +90,7 @@ public class Player {
     }
 
     @SuppressLint("NewApi")
-	public void Draw(){
+	public void draw(){
 
         lifeCicle();
         GLES20.glUseProgram(shad.prog_id);
@@ -172,7 +173,7 @@ public class Player {
 
     public void translate(Vec2 dir){
     	float x = dir.v[0];
-    	float y = dir.v[2];
+    	float y = dir.v[1];
     	Matrix.translateM(ModelMatrix,0, x, 0, y);
         aabb.updateVerts(ModelMatrix);
 
@@ -221,7 +222,7 @@ public class Player {
     }
     private void moving(){
         S = velocity * (tPres - tPast);
-        translate(Vec2.multiply(dir, S));
+        translate((Vec2)Vectors.multiply(dir, S));
     }
 
 }

@@ -3,13 +3,18 @@ package com.labyrinth.myapplication;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.core.Player;
+
 public class TestTouch implements View.OnTouchListener {
 
     private float xStart, xFinish;
     private float yStart, yFinish;
     private Vector previous;
     private float length;
-
+    private Player player;
+    public TestTouch(Player player) {
+        this.player = player;
+    }
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         float x = event.getX();
@@ -61,6 +66,7 @@ public class TestTouch implements View.OnTouchListener {
             }
             vec = new Vec2(xFinish - xStart, yStart - yFinish);
         }
+        player.move((Vec2)Vectors.convert(vec,100));
         previous = new Vec2(vec.getVec()[0], vec.getVec()[1]);
         return true;
     }

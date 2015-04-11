@@ -18,6 +18,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private TextureLoader TexLoad;
     private Player sm;
     private Player[] sm2 = new Player[10];
+    private TestTouch tt;
 
     private float x, y;
 
@@ -45,6 +46,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         G.setScreenXY(width, height);
         Vec2 pos = new Vec2(0.0f, 0.0f);
         sm = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), pos);
+        tt = new TestTouch(sm);
         for (int i = 0; i < 3; i++) {
             sm2[i] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(i, 1));
         }
@@ -63,21 +65,23 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void onTouchEvent(final MotionEvent event) {
-        int e = event.getAction();
-        if (e == MotionEvent.ACTION_MOVE) {
-            float nx = event.getX();
-            float ny = event.getY();
-            float dx = nx - x;
-            float dy = ny - y;
-            if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
-                sm.translate(new Vec2(dx / 100.0f, dy / 100.0f));
-                for (int i = 0; i < 4; i++) {
-                    sm.collide(sm2[i].aabb);
-                }
-            }
-            x = event.getX();
-            y = event.getY();
-        }
-        Camera.setLookAtM(sm.ModelMatrix[12], 4.0f, sm.ModelMatrix[14] + 0.1f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
+        tt.onTouch(null, event);
     }
+//        int e = event.getAction();
+//        if (e == MotionEvent.ACTION_MOVE) {
+//            float nx = event.getX();
+//            float ny = event.getY();
+//            float dx = nx - x;
+//            float dy = ny - y;
+//            if (Math.abs(dx) < 100 && Math.abs(dy) < 100) {
+//                sm.translate(new Vec2(dx / 100.0f, dy / 100.0f));
+//                for (int i = 0; i < 4; i++) {
+//                    sm.collide(sm2[i].aabb);
+//                }
+//            }
+//            x = event.getX();
+//            y = event.getY();
+//        }
+//        Camera.setLookAtM(sm.ModelMatrix[12], 4.0f, sm.ModelMatrix[14] + 0.1f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
+//    }
 }
