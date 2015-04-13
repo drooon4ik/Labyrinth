@@ -34,6 +34,18 @@ public class Vectors implements  Cloneable{
         return instantiate(params, first.getClass());
     }
 
+    static public Vector add(Vector first, Vector second) {
+        if(first.getClass() != second.getClass()) {
+            throw new IllegalArgumentException("Incompatible arguments: first = " + first.getClass() + ", second " + second.getClass());
+        }
+        float[] params = new float[first.getVec().length];
+        for (int i = 0; i < params.length; i++) {
+            params[i] = first.getVec()[i] + second.getVec()[i];
+        }
+        return instantiate(params, first.getClass());
+    }
+
+
     static public float length(Vector vec) {
         float len = 0;
         for (int i = 0; i < vec.getVec().length; i++) {
