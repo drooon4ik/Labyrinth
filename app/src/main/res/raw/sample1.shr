@@ -31,7 +31,7 @@ uniform sampler2D myTextureSampler;
 
 void main(){
     vec3 LightColor = vec3(1,1,1);
-    float LightPower = 20.0f;
+    float LightPower = 2.0f;
 
     //vec3 MaterialDiffuseColor = vec3(0.9,0.9,0.9);//texture2D( myTextureSampler, UV ).rgb;
     vec3 MaterialDiffuseColor = texture2D( myTextureSampler, UV ).rgb;
@@ -59,7 +59,7 @@ void main(){
                 		// Diffuse : "color" of the object
                 		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (d*d) +
                 		// Specular : reflective highlight, like a mirror
-                		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,200.0) / (d*d);
+                		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,500.0) / (d*d);
 
     gl_FragColor = vec4(color, 1.0);
 }

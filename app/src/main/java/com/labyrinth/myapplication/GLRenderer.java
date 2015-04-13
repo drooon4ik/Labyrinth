@@ -36,21 +36,23 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
 
         sm.draw();
-        for (int i = 0; i < 4; i++) {
-            sm2[i].draw();
-        }
+        sm2[0].draw();
+//        for (int i = 0; i < 4; i++) {
+//            sm2[i].draw();
+//        }
     }
 
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
         G.setScreenXY(width, height);
         Vec2 pos = new Vec2(0.0f, 0.0f);
-        sm = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), pos);
+        sm = new Player("filex", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), pos);
         tt = new TestTouch(sm);
-        for (int i = 0; i < 3; i++) {
-            sm2[i] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(i, 1));
-        }
-        sm2[3] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(2, 0));
+        sm2[0] = new Player("scene", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(0, 0));
+//        for (int i = 0; i < 3; i++) {
+//            sm2[i] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(i, 1));
+//        }
+//        sm2[3] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(2, 0));
         float ratio = (float) width / height;
         Camera.setfrustumMProj(-ratio, ratio, -1, 1, 1.0f, 60);
         Camera.setLookAtM(0.0f, 4.1f, 0.1f, 0, 0, 0, 0, 1.0f, 0);
@@ -66,6 +68,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     public void onTouchEvent(final MotionEvent event) {
         tt.onTouch(null, event);
+        Camera.setLookAtM(sm.ModelMatrix[12], 8.0f, sm.ModelMatrix[14] + 0.1f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
     }
 //        int e = event.getAction();
 //        if (e == MotionEvent.ACTION_MOVE) {

@@ -25,7 +25,7 @@ import utilities.Utilities;
 
 @SuppressLint("NewApi")
 public class Player {
-    private static int count;
+    private int count;
     private Texture tex;
     public Shader shad;
     public final float[] ModelMatrix = new float[16];
@@ -38,7 +38,7 @@ public class Player {
     private int light_position;
     static float[] lightPos = new float[3];
 
-    static int vertex_id, normal_id, uv_id;
+    int vertex_id, normal_id, uv_id;
 
     private Vec2 dir;
     private float velocity;
@@ -52,7 +52,7 @@ public class Player {
 	private String PACKAGE_NAME;
     
 	public AABB aabb;
-    static ModelData md;
+    ModelData md;
     public Player(String name, Shader shad, Texture tex, Vec2 pos){
         PACKAGE_NAME = G.getContext().getApplicationContext().getPackageName();
         try {
@@ -74,14 +74,14 @@ public class Player {
         myTextureSampler = GLES20.glGetUniformLocation(shad.prog_id, "myTextureSampler");
 
 
-        velocity = 0.001f;
+        velocity = 0.005f;
 
         aabb = new AABB(pos, 1, 1);
 
         Matrix.setIdentityM(ModelMatrix, 0);
         translate(pos);
         lightPos[0] = ModelMatrix[12];
-        lightPos[1] = ModelMatrix[13] + 2;
+        lightPos[1] = ModelMatrix[13];
         lightPos[2] = ModelMatrix[14];
 
         tPast = tPres = G.getTime();
@@ -122,9 +122,15 @@ public class Player {
     }
 
 
-    void Load_Mesh(String Name) throws IOException {
+    void Load_Mesh(String name) throws IOException {
         if(md == null) {
-            md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.filex));
+            switch (name) {
+                case "scene": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.scene));
+                    break;
+                case "filex": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.filex));
+                    break;
+            }
+
 
 
             count = md.v.length;
@@ -178,7 +184,7 @@ public class Player {
         aabb.updateVerts(ModelMatrix);
 
         lightPos[0] = ModelMatrix[12];
-        lightPos[1] = ModelMatrix[13] + 4;
+        lightPos[1] = ModelMatrix[13] + 1;
         lightPos[2] = ModelMatrix[14];
 
     }
