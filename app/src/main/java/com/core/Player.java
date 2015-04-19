@@ -18,6 +18,7 @@ import com.labyrinth.myapplication.Shader;
 import com.labyrinth.myapplication.Shared;
 import com.labyrinth.myapplication.Texture;
 import com.labyrinth.myapplication.Vec2;
+import com.labyrinth.myapplication.Vector;
 import com.labyrinth.myapplication.Vectors;
 
 import utilities.ModelData;
@@ -76,7 +77,12 @@ public class Player {
 
         velocity = 0.005f;
 
-        aabb = new AABB(pos, 1, 1);
+        Vector collisionModel[] = new Vector[4];
+        collisionModel[0] = new Vec2(-0.5f,-0.5f);
+        collisionModel[1] = new Vec2(-0.5f,0.5f);
+        collisionModel[2] = new Vec2(0.5f,0.5f);
+        collisionModel[3] = new Vec2(0.5f,-0.5f);
+        aabb = new AABB(collisionModel);
 
         Matrix.setIdentityM(ModelMatrix, 0);
         translate(pos);
@@ -128,6 +134,14 @@ public class Player {
                 case "scene": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.scene));
                     break;
                 case "filex": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.filex));
+                    break;
+                case "scenecoll": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.scenecoll));
+                    break;
+                case "scenecollision": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.scenecoll));
+                    break;
+                case "tr": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.tr));
+                    break;
+                case "trcoll": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.trcoll));
                     break;
             }
 
@@ -222,7 +236,7 @@ public class Player {
     //public void move(Vec2 vec) {
     public void move(Vec2 vec) {
         dir = vec;
-        moveExe = 4;
+        moveExe = 6;
 //        dir.v[0] = 1.0f;
 //        dir.v[2] = 0.0f;
     }

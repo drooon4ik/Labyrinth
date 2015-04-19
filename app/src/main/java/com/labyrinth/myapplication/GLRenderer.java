@@ -9,7 +9,10 @@ import android.view.MotionEvent;
 
 import com.core.Player;
 
+import java.util.List;
+
 import utilities.ShaderLoader;
+import utilities.Utilities;
 
 
 public class GLRenderer implements GLSurfaceView.Renderer {
@@ -19,7 +22,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private Player sm;
     private Player[] sm2 = new Player[10];
     private TestTouch tt;
-
+    private AABB sceneAABB;
+    private List<AABB> aabbList;
     private float x, y;
 
     public GLRenderer(Context context) {
@@ -46,9 +50,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         G.setScreenXY(width, height);
         Vec2 pos = new Vec2(0.0f, 0.0f);
-        sm = new Player("filex", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), pos);
+        sm = new Player("tr", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), pos);
         tt = new TestTouch(sm);
-        sm2[0] = new Player("scene", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(0, 0));
+        sm2[0] = new Player("scenecoll", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(0, 0));
+        aabbList = Utilities.loadCollisionShit(Shared.res.openRawResource(R.raw.scenecollision));
+
 //        for (int i = 0; i < 3; i++) {
 //            sm2[i] = new Player("mesh1", ShdLoad.Load("sample1"), TexLoad.Load("texture", true, true, true), new Vec2(i, 1));
 //        }
@@ -69,6 +75,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     public void onTouchEvent(final MotionEvent event) {
         tt.onTouch(null, event);
         Camera.setLookAtM(sm.ModelMatrix[12], 8.0f, sm.ModelMatrix[14] + 0.1f, sm.ModelMatrix[12], 0, sm.ModelMatrix[14], 0, 1.0f, 0);
+        for(int i = 0; i < aabbList.size(); i++) {
+            sm.collide(aabbList.get(i));
+        }
     }
 //        int e = event.getAction();
 //        if (e == MotionEvent.ACTION_MOVE) {

@@ -1,12 +1,19 @@
 package utilities;
 
+import com.labyrinth.myapplication.AABB;
+import com.labyrinth.myapplication.Vec2;
+import com.labyrinth.myapplication.Vector;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Utilities {
@@ -255,6 +262,74 @@ public class Utilities {
 		
 		return model;
 	}
+
+    public static List<AABB> loadCollisionShit(InputStream stream) {
+        String line;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        ArrayBuilder<Float> vbuilder = new ArrayBuilder<>();
+        ArrayBuilder<Integer> fbuilder = new ArrayBuilder<>();
+
+        try {
+            while((line = reader.readLine()) != null) {
+                if(line.startsWith("v")) {
+                    int columnCounter = 0;
+                    for(String token : line.split(" ")) {
+                        try {
+                            vbuilder.add(Float.parseFloat(token), columnCounter++);
+                        } catch(NumberFormatException e) {
+                            continue;
+                        }
+                    }
+                    vbuilder.addRow();
+                }
+                if(line.startsWith("f")) {
+                    int columnCounter = 0;
+                    for(String token : line.split(" ")) {
+                        try {
+                            fbuilder.add(Integer.parseInt(token), columnCounter++);
+                        } catch(NumberFormatException e) {
+                            continue;
+                        }
+                    }
+                    fbuilder.addRow();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Float[][] v = vbuilder.getFormedArray();
+        Integer[][] f = fbuilder.getFormedArray();
+
+        List<AABB> list = new ArrayList<>();
+
+        for (int i = 0; i < f.length; i++) {
+            Vector[] vectors = new Vector[3];
+            int counter = 0;
+            for (int j = 0; j < f[i].length; j++) {
+                vectors[counter++] = new Vec2(unwrap(v[f[i][j] - 1]));
+            }
+            AABB aabb = new AABB(vectors);
+            //aabb.vertices = vectors;
+            list.add(aabb);
+            counter = 0;
+        }
+        System.out.println(list);
+        return list;
+
+    }
+
+    private static void fillArray(float[] to, Float[] from, int startIndex) {
+        for (int i = 0; i < from.length; i++) {
+            to[startIndex++] = from[i];
+        }
+    }
+
+    private static float[] unwrap(Float[] array) {
+        float[] result = new float[array.length - 1];
+        result[0] = array[0];
+		result[1] = array[2];
+        return result;
+    }
 
 	private static void close(BufferedReader br) {
 		try {

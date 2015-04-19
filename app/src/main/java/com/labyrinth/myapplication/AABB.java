@@ -5,13 +5,31 @@ import android.opengl.Matrix;
 public class AABB {
 	public Vector[] vertices;
 	public Vector[] verticesMod;
-	public int numPoints = 4;
+	public final int numPoints;
 	
 //	private Vec2 min_axis = new Vec2(0, 0);
-	private Vector[] m_Axis = new Vec2[4];
-	
-	public AABB(Vec2 position, float w, float h) {
+	private Vector[] m_Axis;
 
+    public AABB(Vector[] vectors) {
+        numPoints = vectors.length;
+        m_Axis = new Vec2[numPoints];
+        vertices = vectors;
+        verticesMod = new Vec2[numPoints];
+        for(int i = 0; i < numPoints; i++) {
+            m_Axis[i] = new Vec2(0.0f,0.0f);
+            verticesMod[i] = new Vec2(0,0);
+            verticesMod[i].v = vertices[i].v.clone();
+        }
+        for(int i = 0; i < numPoints; i++) {
+            m_Axis[i] = Vectors.minus(verticesMod[(i + 1) % numPoints], verticesMod[i]);
+            m_Axis[i] = Vectors.normalize(m_Axis[i]);
+            m_Axis[i] = new Vec2(-m_Axis[i].v[1], m_Axis[i].v[0]);
+        }
+    }
+
+	public AABB(Vec2 position, float w, float h) {
+        numPoints = 4;
+        m_Axis = new Vec2[numPoints];
         vertices = new Vec2[] {
                 new Vec2( - w / 2, - h / 2),
                 new Vec2( + w / 2, - h / 2),
@@ -29,7 +47,7 @@ public class AABB {
 	
 	public void updateVerts(float[] matrix) {
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < numPoints; i++) {
             float[] rez = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
             float[] mul = new float[4];
 
@@ -43,7 +61,7 @@ public class AABB {
             verticesMod[i].v[1] = rez[2];
         }
 
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < numPoints; i++) {
             m_Axis[i] = Vectors.minus(verticesMod[(i + 1) % numPoints], verticesMod[i]);
             m_Axis[i] = Vectors.normalize(m_Axis[i]);
             m_Axis[i] = new Vec2(-m_Axis[i].v[1], m_Axis[i].v[0]);
