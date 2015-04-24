@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.opengl.GLES20;
@@ -53,9 +54,12 @@ public class Player {
 	private String PACKAGE_NAME;
     
 	public AABB aabb;
+    private List<AABB> aabbList;
     ModelData md;
-    public Player(String name, Shader shad, Texture tex, Vec2 pos){
+    public Player(String name, Shader shad, Texture tex, Vec2 pos, List<AABB> list){
         PACKAGE_NAME = G.getContext().getApplicationContext().getPackageName();
+        aabbList = list;
+        aabbList = Utilities.loadCollisionShit(Shared.res.openRawResource(R.raw.scenecollision));
         try {
             Load_Mesh(name);
         } catch (IOException e) {
@@ -78,10 +82,10 @@ public class Player {
         velocity = 0.005f;
 
         Vector collisionModel[] = new Vector[4];
-        collisionModel[0] = new Vec2(-0.5f,-0.5f);
-        collisionModel[1] = new Vec2(-0.5f,0.5f);
-        collisionModel[2] = new Vec2(0.5f,0.5f);
-        collisionModel[3] = new Vec2(0.5f,-0.5f);
+        collisionModel[0] = new Vec2(-0.2f,-0.2f);
+        collisionModel[1] = new Vec2(-0.2f, 0.2f);
+        collisionModel[2] = new Vec2( 0.2f, 0.2f);
+        collisionModel[3] = new Vec2( 0.2f,-0.2f);
         aabb = new AABB(collisionModel);
 
         Matrix.setIdentityM(ModelMatrix, 0);
@@ -143,6 +147,8 @@ public class Player {
                     break;
                 case "trcoll": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.trcoll));
                     break;
+                case "sphere": md = Utilities.loadModelExt(Shared.res.openRawResource(R.raw.sphere));
+                    break;
             }
 
 
@@ -198,7 +204,7 @@ public class Player {
         aabb.updateVerts(ModelMatrix);
 
         lightPos[0] = ModelMatrix[12];
-        lightPos[1] = ModelMatrix[13] + 1;
+        lightPos[1] = ModelMatrix[13] + 1.5f;
         lightPos[2] = ModelMatrix[14];
 
     }
@@ -243,6 +249,10 @@ public class Player {
     private void moving(){
         S = velocity * (tPres - tPast);
         translate((Vec2)Vectors.multiply(dir, S));
+        for(int i = 0; i < aabbList.size(); i++) {
+            collide(aabbList.get(i));
+        }
+        Camera.setLookAtM(ModelMatrix[12], 8.0f, ModelMatrix[14] + 0.1f, ModelMatrix[12], 0, ModelMatrix[14], 0, 1.0f, 0);
     }
 
 }
